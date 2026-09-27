@@ -1,15 +1,31 @@
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-
+import {
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { login } from "../services/api";
+import { saveToken } from "../services/auth";
 export default function Index() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function handleLogin() {
-    // console.log("Email:", email);
-    // console.log("Password:", password);
-    router.replace("/home");
+  async function handleLogin() {
+    setLoading(true);
+    try {
+      const { token } = await login(email, password);
+      await saveToken(token);
+      router.replace("/home");
+    } catch (err: any) {
+      Alert.alert("Login failed", err.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -33,8 +49,10 @@ export default function Index() {
         secureTextEntry={true}
       />
 
-      <Pressable style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
+      <Pressable style={styles.button} onPress={handleLogin} disabled={loading}>
+        <Text style={styles.buttonText}>
+          {loading ? "Logging in..." : "Login"}
+        </Text>
       </Pressable>
     </View>
   );
