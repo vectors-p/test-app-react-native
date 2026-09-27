@@ -10,25 +10,31 @@ type RecentProgressCardProps = {
   exercises: ProgressExercise[];
 };
 
-export default function RecentProgressCard({
-  exercises,
-}: RecentProgressCardProps) {
+export default function RecentProgressCard({ exercises }: RecentProgressCardProps) {
+  if (exercises.length === 0) {
+    return (
+      <View style={styles.card}>
+        <Text style={styles.title}>Recent Progress</Text>
+        <Text style={styles.emptyText}>
+          Log a few workouts to start tracking progress.
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.card}>
       <Text style={styles.title}>Recent Progress</Text>
-
       <View style={styles.list}>
         {exercises.slice(0, 4).map((exercise, index) => (
           <View
             key={exercise.name}
             style={[
               styles.exercise,
-              index !== Math.min(exercises.length, 4) - 1 &&
-                styles.exerciseBorder,
+              index !== Math.min(exercises.length, 4) - 1 && styles.exerciseBorder,
             ]}
           >
             <Text style={styles.exerciseName}>{exercise.name}</Text>
-
             <Text style={styles.progress}>{exercise.progress}</Text>
           </View>
         ))}
@@ -84,4 +90,9 @@ const styles = StyleSheet.create({
     color: "#16A34A",
     marginLeft: 12,
   },
+  emptyText: {
+  fontSize: 14,
+  color: "#9CA3AF",
+  fontStyle: "italic",
+},
 });

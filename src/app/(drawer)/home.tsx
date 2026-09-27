@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -7,15 +7,16 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getDashboard } from "../services/api";
-import { getToken } from "../services/auth";
-import DashboardAppBar from "./components/DashboardAppBar";
-import LastWorkoutCard from "./components/LastWorkoutCard";
-import RecentProgressCard from "./components/RecentProgressCard";
-import StaleMilestonesCard from "./components/StaleMileStonesCard";
-import TodaysVolumeCard from "./components/TodaysVolumeCard";
+import { getDashboard } from "../../services/api";
+import { getToken } from "../../services/auth";
+import DashboardAppBar from "../components/DashboardAppBar";
+import LastWorkoutCard from "../components/LastWorkoutCard";
+import RecentProgressCard from "../components/RecentProgressCard";
+import StaleMilestonesCard from "../components/StaleMileStonesCard";
+import TodaysVolumeCard from "../components/TodaysVolumeCard";
 
 type DashboardData = {
   todays_volume: { workouts: number; sets: number; weight: number };
@@ -28,8 +29,10 @@ export default function Home() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
+  const [error, setError] = useState<string | null>(null);
+  const navigation = useNavigation();
   const loadDashboard = useCallback(async () => {
+    setError(null);
     try {
       const token = await getToken();
       if (!token) {
@@ -38,18 +41,37 @@ export default function Home() {
       }
       const dashboard = await getDashboard(token);
       setData(dashboard);
-    } catch (err) {
+    } catch (err: any) {
       console.log("Dashboard load failed", err);
-      router.replace("/");
+      setError(
+        "Couldn't load your dashboard. Check your connection and try again.",
+      );
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   }, []);
-
   useEffect(() => {
     loadDashboard();
   }, [loadDashboard]);
+
+  if (error) {
+    return (
+      <SafeAreaView style={styles.container} edges={["bottom"]}>
+        <DashboardAppBar title="Dashboard" showMenu showNotifications />
+        <View style={styles.errorBox}>
+          <Text style={styles.errorText}>{error}</Text>
+          <Pressable style={styles.retryButton} onPress={loadDashboard}>
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  function openDrawer() {
+    (navigation as any).openDrawer();
+  }
 
   function onRefresh() {
     setRefreshing(true);
@@ -71,7 +93,7 @@ export default function Home() {
         title="Dashboard"
         showMenu={true}
         showNotifications={true}
-        onMenuPress={() => console.log("Open drawer")}
+        onMenuPress={openDrawer}
         onNotificationPress={() => console.log("Open notifications")}
       />
 
@@ -96,7 +118,7 @@ export default function Home() {
           exercises={
             data?.stale_milestones.map((s) => ({
               name: s.name,
-              weeks: s.sessions_since_improvement,
+              sessionsSinceImprovement: s.sessions_since_improvement,
             })) ?? []
           }
         />
@@ -145,5 +167,39 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "700",
+  },
+  errorBox: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24,
+  },
+  errorText: {
+    fontSize: 15,
+    color: "#6B7280",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  retryButton: {
+    backgroundColor: "#2563EB",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 10,
+  },
+  retryButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+  },
+  logoutButton: {
+    marginTop: 12,
+    marginHorizontal: 16,
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logoutButtonText: {
+    color: "#DC2626",
+    fontSize: 14,
+    fontWeight: "600",
   },
 });

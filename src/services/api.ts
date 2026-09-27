@@ -141,3 +141,13 @@ export async function finishSession(token: string, sessionId: number) {
   const data = await res.json();
   return { ok: res.ok, ...data };
 }
+export async function logout(token: string) {
+  const res = await fetch(`${API_URL}/logout`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  });
+  return res.ok;
+}

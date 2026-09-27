@@ -1,9 +1,8 @@
-import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 type Exercise = {
   name: string;
-  weeks: number;
+  sessionsSinceImprovement: number;
 };
 
 type StaleMilestonesCardProps = {
@@ -13,6 +12,10 @@ type StaleMilestonesCardProps = {
 export default function StaleMilestonesCard({
   exercises,
 }: StaleMilestonesCardProps) {
+  if (exercises.length === 0) {
+    return null;
+  }
+
   return (
     <View style={styles.card}>
       <Text style={styles.title}>Needs Attention</Text>
@@ -28,8 +31,9 @@ export default function StaleMilestonesCard({
           >
             <Text style={styles.exerciseName}>{exercise.name}</Text>
 
-            <Text style={styles.weeks}>
-              {exercise.weeks} {exercise.weeks === 1 ? "week" : "weeks"}
+            <Text style={styles.sessions}>
+              {exercise.sessionsSinceImprovement}{" "}
+              {exercise.sessionsSinceImprovement === 1 ? "session" : "sessions"}
             </Text>
           </View>
         ))}
@@ -48,40 +52,35 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E5E7EB",
   },
-
   title: {
     fontSize: 18,
     fontWeight: "700",
     color: "#111827",
     marginBottom: 12,
   },
-
   list: {
     width: "100%",
   },
-
   exercise: {
     minHeight: 48,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-
   exerciseBorder: {
     borderBottomWidth: 1,
     borderBottomColor: "#E5E7EB",
   },
-
   exerciseName: {
     flex: 1,
     fontSize: 15,
     fontWeight: "600",
     color: "#111827",
   },
-
-  weeks: {
+  sessions: {
     fontSize: 13,
-    color: "#6B7280",
+    color: "#DC2626", // red tint since this is a "needs attention" signal
     marginLeft: 12,
+    fontWeight: "600",
   },
 });

@@ -1,22 +1,23 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
-    addExerciseToSession,
-    getRecommendation,
-    logSet,
+  addExerciseToSession,
+  getRecommendation,
+  logSet,
 } from "../../../services/api";
 import { getToken } from "../../../services/auth";
+import ScreenAppBar from "../../components/ScreenAppBar";
 
 export default function ExerciseLogging() {
   const { exerciseId, sessionId } = useLocalSearchParams<{
@@ -36,9 +37,12 @@ export default function ExerciseLogging() {
     null,
   );
 
-  const [loggedSets, setLoggedSets] = useState<
-    { reps: number; weight: number }[]
-  >([]);
+  type LoggedSet = {
+    reps: number;
+    weight: number;
+  };
+
+  const [loggedSets, setLoggedSets] = useState<LoggedSet[]>([]);
 
   const [reps, setReps] = useState("");
   const [weight, setWeight] = useState("");
@@ -94,61 +98,67 @@ export default function ExerciseLogging() {
   }
 
   if (loading) {
-    return <ActivityIndicator style={{ marginTop: 40 }} size="large" />;
+    return (
+      <View style={styles.container}>
+        <ScreenAppBar title="Log exercise" />
+        <ActivityIndicator style={{ marginTop: 40 }} size="large" />
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.recBox}>
-        <Text style={styles.recText}>{recommendation?.reason}</Text>
-      </View>
+      <ScreenAppBar title="Log exercise" />
 
-      <View style={styles.inputRow}>
-        <TextInput
-          style={styles.input}
-          placeholder="Weight"
-          keyboardType="numeric"
-          value={weight}
-          onChangeText={setWeight}
+      <View style={styles.content}>
+        <View style={styles.recBox}>
+          <Text style={styles.recText}>{recommendation?.reason}</Text>
+        </View>
+
+        <View style={styles.inputRow}>
+          <TextInput
+            style={styles.input}
+            placeholder="Weight"
+            keyboardType="numeric"
+            value={weight}
+            onChangeText={setWeight}
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Reps"
+            keyboardType="numeric"
+            value={reps}
+            onChangeText={setReps}
+          />
+
+          <Pressable style={styles.addButton} onPress={handleLogSet}>
+            <Text style={styles.addButtonText}>Log Set</Text>
+          </Pressable>
+        </View>
+
+        <FlatList
+          data={loggedSets}
+          keyExtractor={(_, i) => String(i)}
+          renderItem={({ item, index }) => (
+            <Text style={styles.setRow}>
+              Set {index + 1}: {item.weight}kg × {item.reps}
+            </Text>
+          )}
+          style={styles.setList}
+          contentContainerStyle={styles.setListContent}
         />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Reps"
-          keyboardType="numeric"
-          value={reps}
-          onChangeText={setReps}
-        />
-
-        <Pressable style={styles.addButton} onPress={handleLogSet}>
-          <Text style={styles.addButtonText}>Log Set</Text>
-        </Pressable>
-      </View>
-
-      <FlatList
-        data={loggedSets}
-        keyExtractor={(_, i) => String(i)}
-        renderItem={({ item, index }) => (
-          <Text style={styles.setRow}>
-            Set {index + 1}: {item.weight}kg × {item.reps}
-          </Text>
-        )}
-        style={styles.setList}
-        contentContainerStyle={styles.setListContent}
-      />
-
-      {/* Bottom safe-area */}
-      <View
-        style={[
-          styles.finishButtonContainer,
-          {
-            paddingBottom: Math.max(insets.bottom, 16),
-          },
-        ]}
-      >
-        <Pressable style={styles.finishButton} onPress={handleFinishExercise}>
-          <Text style={styles.finishButtonText}>Done with this exercise</Text>
-        </Pressable>
+        <View
+          style={[
+            styles.finishButtonContainer,
+            { paddingBottom: Math.max(insets.bottom, 16) },
+          ]}
+        >
+          <Pressable style={styles.finishButton} onPress={handleFinishExercise}>
+            <Text style={styles.finishButtonText}>Done with this exercise</Text>
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -157,28 +167,27 @@ export default function ExerciseLogging() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: "#F9FAFB",
   },
-
+  content: {
+    flex: 1,
+    padding: 16,
+  },
   recBox: {
     backgroundColor: "#EFF6FF",
     borderRadius: 14,
     padding: 16,
     marginBottom: 20,
   },
-
   recText: {
     fontSize: 15,
     color: "#1E3A8A",
     fontWeight: "600",
   },
-
   inputRow: {
     flexDirection: "row",
     gap: 8,
   },
-
   input: {
     flex: 1,
     height: 48,
@@ -188,7 +197,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: "#FFF",
   },
-
   addButton: {
     backgroundColor: "#2563EB",
     borderRadius: 10,
@@ -196,31 +204,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
   addButtonText: {
     color: "#FFF",
     fontWeight: "700",
   },
-
   setList: {
     flex: 1,
     marginTop: 16,
   },
-
   setListContent: {
     paddingBottom: 16,
   },
-
   setRow: {
     fontSize: 15,
     paddingVertical: 6,
     color: "#374151",
   },
-
   finishButtonContainer: {
     paddingTop: 12,
   },
-
   finishButton: {
     backgroundColor: "#111827",
     borderRadius: 12,
@@ -228,7 +230,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
   finishButtonText: {
     color: "#FFF",
     fontWeight: "700",

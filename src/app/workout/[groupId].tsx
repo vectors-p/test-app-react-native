@@ -1,15 +1,16 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { getExercisesForGroup } from "../../services/api";
 import { getToken } from "../../services/auth";
+import ScreenAppBar from "../components/ScreenAppBar";
 
 export default function ExerciseList() {
   const { groupId, sessionId } = useLocalSearchParams<{
@@ -24,20 +25,13 @@ export default function ExerciseList() {
   useEffect(() => {
     (async () => {
       const token = await getToken();
-      console.log("TOKEN:", token);
-      console.log("GROUP ID PARAM:", groupId, typeof groupId);
-
-      if (!token) {
-        console.log("No token found, aborting");
-        return;
-      }
+      if (!token) return;
 
       try {
         const data = await getExercisesForGroup(token, Number(groupId));
-        console.log("EXERCISES RESPONSE:", JSON.stringify(data));
         setExercises(data);
       } catch (err) {
-        console.log("FETCH ERROR:", err);
+        console.log("Failed to load exercises:", err);
       } finally {
         setLoading(false);
       }
@@ -45,16 +39,22 @@ export default function ExerciseList() {
   }, [groupId]);
 
   if (loading) {
-    return <ActivityIndicator style={{ marginTop: 40 }} size="large" />;
+    return (
+      <SafeAreaView style={styles.container} edges={["bottom"]}>
+        <ScreenAppBar title="Choose an exercise" />
+        <ActivityIndicator style={{ marginTop: 40 }} size="large" />
+      </SafeAreaView>
+    );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Choose an exercise</Text>
+    <SafeAreaView style={styles.container} edges={["bottom"]}>
+      <ScreenAppBar title="Choose an exercise" />
+
       <FlatList
         data={exercises}
         keyExtractor={(item) => String(item.id)}
-        contentContainerStyle={{ gap: 10 }}
+        contentContainerStyle={styles.list}
         renderItem={({ item }) => (
           <Pressable
             style={styles.row}
@@ -69,17 +69,15 @@ export default function ExerciseList() {
           </Pressable>
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#F9FAFB" },
-  title: {
-    fontSize: 20,
-    fontWeight: "700",
-    marginBottom: 16,
-    color: "#111827",
+  container: { flex: 1, backgroundColor: "#F9FAFB" },
+  list: {
+    padding: 16,
+    gap: 10,
   },
   row: {
     padding: 18,

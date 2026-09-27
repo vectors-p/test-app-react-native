@@ -1,15 +1,16 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { createSession, getMuscleGroups } from "../../services/api";
 import { getToken } from "../../services/auth";
+import ScreenAppBar from "../components/ScreenAppBar";
 
 export default function MuscleGroupPicker() {
   const { sessionId: existingSessionId } = useLocalSearchParams<{
@@ -39,28 +40,28 @@ export default function MuscleGroupPicker() {
   }, []);
 
   if (loading) {
-    return <ActivityIndicator style={{ marginTop: 40 }} size="large" />;
+    return (
+      <SafeAreaView style={styles.container} edges={["bottom"]}>
+        <ScreenAppBar title="Choose a muscle group" />
+        <ActivityIndicator style={{ marginTop: 40 }} size="large" />
+      </SafeAreaView>
+    );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Choose a muscle group</Text>
+    <SafeAreaView style={styles.container} edges={["bottom"]}>
+      <ScreenAppBar title="Choose a muscle group" />
+
       <FlatList
         data={groups}
         keyExtractor={(item) => String(item.id)}
         numColumns={2}
         columnWrapperStyle={{ gap: 12 }}
-        contentContainerStyle={{ gap: 12 }}
+        contentContainerStyle={styles.list}
         renderItem={({ item }) => (
           <Pressable
             style={styles.card}
             onPress={() => {
-              console.log(
-                "Navigating with groupId:",
-                item.id,
-                "sessionId:",
-                sessionId,
-              );
               router.push({
                 pathname: "/workout/[groupId]",
                 params: { groupId: item.id, sessionId },
@@ -71,17 +72,15 @@ export default function MuscleGroupPicker() {
           </Pressable>
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#F9FAFB" },
-  title: {
-    fontSize: 20,
-    fontWeight: "700",
-    marginBottom: 16,
-    color: "#111827",
+  container: { flex: 1, backgroundColor: "#F9FAFB" },
+  list: {
+    padding: 16,
+    gap: 12,
   },
   card: {
     flex: 1,
