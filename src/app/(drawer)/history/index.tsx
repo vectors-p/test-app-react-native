@@ -1,10 +1,11 @@
 import ScreenAppBar from "@/app/components/ScreenAppBar";
-import { router, useNavigation } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, useFocusEffect, useNavigation } from "expo-router";
+import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   Pressable,
+  RefreshControl,
   StyleSheet,
   Text,
   View,
@@ -28,16 +29,17 @@ type Session = {
 export default function History() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigation = useNavigation();
+
   function openDrawer() {
     (navigation as any).openDrawer();
   }
+
   const loadSessions = async () => {
     try {
-      setLoading(true);
       setError(null);
-
       const token = await getToken();
 
       if (!token) {
@@ -52,12 +54,20 @@ export default function History() {
       setError("Unable to load your workout history. Please try again.");
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
-  useEffect(() => {
+  useFocusEffect(
+    useCallback(() => {
+      loadSessions();
+    }, []),
+  );
+
+  function onRefresh() {
+    setRefreshing(true);
     loadSessions();
-  }, []);
+  }
 
   if (loading) {
     return (
@@ -110,6 +120,14 @@ export default function History() {
           styles.list,
           sessions.length === 0 && styles.emptyList,
         ]}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#2563EB"]}
+            tintColor="#2563EB"
+          />
+        }
         ListEmptyComponent={
           <Text style={styles.empty}>No workouts logged yet.</Text>
         }

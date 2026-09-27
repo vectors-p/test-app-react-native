@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -47,7 +48,11 @@ export default function Index() {
       style={styles.flex}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <View style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.header}>
           <View style={styles.logoCircle}>
             <Ionicons name="barbell" size={32} color="#FFFFFF" />
@@ -119,23 +124,20 @@ export default function Index() {
             )}
           </Pressable>
         </View>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  container: {
-    flex: 1,
+  flex: { flex: 1, backgroundColor: "#F9FAFB" },
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: "center",
     paddingHorizontal: 24,
-    backgroundColor: "#F9FAFB",
+    paddingVertical: 40,
   },
-  header: {
-    alignItems: "center",
-    marginBottom: 36,
-  },
+  header: { alignItems: "center", marginBottom: 36 },
   logoCircle: {
     width: 64,
     height: 64,
@@ -145,19 +147,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: 16,
   },
-  title: {
-    fontSize: 26,
-    fontWeight: "700",
-    color: "#111827",
-    marginBottom: 6,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#6B7280",
-  },
-  form: {
-    gap: 4,
-  },
+  title: { fontSize: 26, fontWeight: "700", color: "#111827", marginBottom: 6 },
+  subtitle: { fontSize: 14, color: "#6B7280" },
+  form: { gap: 4 },
   label: {
     fontSize: 13,
     fontWeight: "600",
@@ -175,18 +167,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     paddingHorizontal: 14,
   },
-  inputIcon: {
-    marginRight: 8,
-  },
-  input: {
-    flex: 1,
-    fontSize: 15,
-    color: "#111827",
-    height: "100%",
-  },
-  eyeButton: {
-    padding: 4,
-  },
+  inputIcon: { marginRight: 8 },
+  input: { flex: 1, fontSize: 15, color: "#111827", height: "100%" },
+  eyeButton: { padding: 4 },
   button: {
     height: 52,
     backgroundColor: "#2563EB",
@@ -195,12 +178,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 24,
   },
-  buttonDisabled: {
-    opacity: 0.7,
-  },
-  buttonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "700",
-  },
+  buttonDisabled: { opacity: 0.7 },
+  buttonText: { color: "#FFFFFF", fontSize: 16, fontWeight: "700" },
 });

@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type ScreenAppBarProps = {
   title: string;
@@ -15,6 +16,8 @@ export default function ScreenAppBar({
   rightIcon,
   onRightPress,
 }: ScreenAppBarProps) {
+  const insets = useSafeAreaInsets();
+
   function handleBack() {
     if (onBackPress) {
       onBackPress();
@@ -24,47 +27,54 @@ export default function ScreenAppBar({
   }
 
   return (
-    <View style={styles.container}>
-      <Pressable
-        style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}
-        onPress={handleBack}
-        hitSlop={8}
-      >
-        <Ionicons name="chevron-back" size={24} color="#1F2937" />
-      </Pressable>
-
-      <Text style={styles.title} numberOfLines={1}>
-        {title}
-      </Text>
-
-      {rightIcon ? (
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <View style={styles.row}>
         <Pressable
           style={({ pressed }) => [
             styles.iconButton,
             pressed && styles.pressed,
           ]}
-          onPress={onRightPress}
+          onPress={handleBack}
           hitSlop={8}
         >
-          <Ionicons name={rightIcon} size={22} color="#1F2937" />
+          <Ionicons name="chevron-back" size={24} color="#1F2937" />
         </Pressable>
-      ) : (
-        <View style={styles.iconButton} /> // keeps title centered even with no right icon
-      )}
+
+        <Text style={styles.title} numberOfLines={1}>
+          {title}
+        </Text>
+
+        {rightIcon ? (
+          <Pressable
+            style={({ pressed }) => [
+              styles.iconButton,
+              pressed && styles.pressed,
+            ]}
+            onPress={onRightPress}
+            hitSlop={8}
+          >
+            <Ionicons name={rightIcon} size={22} color="#1F2937" />
+          </Pressable>
+        ) : (
+          <View style={styles.iconButton} />
+        )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: "#FFFFFF",
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E7EB",
+  },
+  row: {
     height: 60,
     paddingHorizontal: 8,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#FFFFFF",
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
   },
   iconButton: {
     width: 44,

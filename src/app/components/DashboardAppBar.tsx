@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type DashboardAppBarProps = {
   title: string;
@@ -16,42 +17,52 @@ export default function DashboardAppBar({
   onMenuPress,
   onNotificationPress,
 }: DashboardAppBarProps) {
+  const insets = useSafeAreaInsets();
   return (
-    <View style={styles.container}>
-      <View style={styles.leftSection}>
-        {showMenu && (
+    <View
+      style={{
+        backgroundColor: "#FFFFFF",
+        paddingTop: insets.top,
+        borderBottomWidth: 1,
+        borderBottomColor: "#E5E7EB",
+      }}
+    >
+      <View style={styles.container}>
+        <View style={styles.leftSection}>
+          {showMenu && (
+            <Pressable
+              style={({ pressed }) => [
+                styles.iconButton,
+                pressed && styles.pressed,
+              ]}
+              onPress={onMenuPress}
+            >
+              <Ionicons name="menu-outline" size={25} color="#1F2937" />
+            </Pressable>
+          )}
+
+          <View>
+            <Text style={styles.subtitle}>Welcome back</Text>
+            <Text style={styles.title}>{title}</Text>
+          </View>
+        </View>
+
+        {showNotifications && (
           <Pressable
             style={({ pressed }) => [
-              styles.iconButton,
+              styles.notificationButton,
               pressed && styles.pressed,
             ]}
-            onPress={onMenuPress}
+            onPress={onNotificationPress}
           >
-            <Ionicons name="menu-outline" size={25} color="#1F2937" />
-          </Pressable>
-        )}
+            <Ionicons name="notifications-outline" size={23} color="#1F2937" />
 
-        <View>
-          <Text style={styles.subtitle}>Welcome back</Text>
-          <Text style={styles.title}>{title}</Text>
-        </View>
-      </View>
-
-      {showNotifications && (
-        <Pressable
-          style={({ pressed }) => [
-            styles.notificationButton,
-            pressed && styles.pressed,
-          ]}
-          onPress={onNotificationPress}
-        >
-          <Ionicons name="notifications-outline" size={23} color="#1F2937" />
-
-          {/* <View style={styles.notificationBadge}>
+            {/* <View style={styles.notificationBadge}>
             <Text style={styles.badgeText}>3</Text>
           </View> */}
-        </Pressable>
-      )}
+          </Pressable>
+        )}
+      </View>
     </View>
   );
 }

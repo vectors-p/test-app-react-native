@@ -1,5 +1,5 @@
-import { router, useNavigation } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { router, useFocusEffect, useNavigation } from "expo-router";
+import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -51,9 +51,11 @@ export default function Home() {
       setRefreshing(false);
     }
   }, []);
-  useEffect(() => {
-    loadDashboard();
-  }, [loadDashboard]);
+  useFocusEffect(
+    useCallback(() => {
+      loadDashboard();
+    }, [loadDashboard]),
+  );
 
   if (error) {
     return (
