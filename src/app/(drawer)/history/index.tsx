@@ -161,11 +161,14 @@ const styles = StyleSheet.create({
   },
   emptyList: {
     flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   empty: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#D1D5DB",
     textAlign: "center",
-    color: "#6B7280",
-    marginTop: 40,
   },
   center: {
     flex: 1,
