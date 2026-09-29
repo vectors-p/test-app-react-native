@@ -23,8 +23,12 @@ export default function DashboardAppBar({
       style={{
         backgroundColor: "#FFFFFF",
         paddingTop: insets.top,
-        borderBottomWidth: 1,
-        borderBottomColor: "#E5E7EB",
+        zIndex: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 6,
+        elevation: 4,
       }}
     >
       <View style={styles.container}>
