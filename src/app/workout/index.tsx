@@ -5,7 +5,7 @@ import {
   FlatList,
   Pressable,
   StyleSheet,
-  Text
+  Text,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { createSession, getMuscleGroups } from "../../services/api";
@@ -50,7 +50,16 @@ export default function MuscleGroupPicker() {
 
   return (
     <SafeAreaView style={styles.container} edges={["bottom"]}>
-      <ScreenAppBar title="Choose a muscle group" />
+      <ScreenAppBar
+        title="Choose a muscle group"
+        rightIcon="list-outline"
+        onRightPress={() =>
+          router.push({
+            pathname: "/workout/session-summary",
+            params: { sessionId },
+          })
+        }
+      />
 
       <FlatList
         data={groups}

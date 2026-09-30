@@ -103,7 +103,12 @@ export default function Home() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#2563EB"]}
+            tintColor="#2563EB"
+          />
         }
       >
         <TodaysVolumeCard

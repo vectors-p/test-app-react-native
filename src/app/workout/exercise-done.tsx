@@ -41,6 +41,18 @@ export default function ExerciseDone() {
       <Pressable style={styles.secondaryButton} onPress={handleFinishWorkout}>
         <Text style={styles.secondaryButtonText}>Finish workout</Text>
       </Pressable>
+
+      <Pressable
+        style={styles.secondaryButton}
+        onPress={() =>
+          router.push({
+            pathname: "/workout/session-summary",
+            params: { sessionId },
+          })
+        }
+      >
+        <Text style={styles.secondaryButtonText}>View this workout</Text>
+      </Pressable>
     </View>
   );
 }
@@ -86,6 +98,7 @@ const styles = StyleSheet.create({
     borderColor: "#D1D5DB",
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 12,
   },
   secondaryButtonText: {
     color: "#374151",

@@ -127,6 +127,13 @@ export async function getSessions(token: string) {
   if (!res.ok) throw new Error("Failed to load workout history");
   return res.json();
 }
+export async function getSession(token: string, sessionId: number) {
+  const res = await fetch(`${API_URL}/sessions/${sessionId}`, {
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+  });
+  if (!res.ok) throw new Error("Failed to load session");
+  return res.json();
+}
 
 export async function finishSession(token: string, sessionId: number) {
   const res = await fetch(`${API_URL}/sessions/${sessionId}/finish`, {
